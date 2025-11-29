@@ -1,37 +1,64 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { 
+  type FormSubmission, 
+  type InsertFormSubmission,
+  type ChatMessage,
+  type InsertChatMessage
+} from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Form submissions
+  createFormSubmission(submission: InsertFormSubmission): Promise<FormSubmission>;
+  getAllFormSubmissions(): Promise<FormSubmission[]>;
+  
+  // Chat messages
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatMessagesBySession(sessionId: string): Promise<ChatMessage[]>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private formSubmissions: Map<string, FormSubmission>;
+  private chatMessages: Map<string, ChatMessage>;
 
   constructor() {
-    this.users = new Map();
+    this.formSubmissions = new Map();
+    this.chatMessages = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  // Form submissions
+  async createFormSubmission(insertSubmission: InsertFormSubmission): Promise<FormSubmission> {
+    const id = randomUUID();
+    const submission: FormSubmission = {
+      ...insertSubmission,
+      id,
+      submittedAt: new Date(),
+    };
+    this.formSubmissions.set(id, submission);
+    return submission;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
+  async getAllFormSubmissions(): Promise<FormSubmission[]> {
+    return Array.from(this.formSubmissions.values()).sort(
+      (a, b) => b.submittedAt.getTime() - a.submittedAt.getTime()
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  // Chat messages
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const message: ChatMessage = {
+      ...insertMessage,
+      id,
+      sentAt: new Date(),
+    };
+    this.chatMessages.set(id, message);
+    return message;
+  }
+
+  async getChatMessagesBySession(sessionId: string): Promise<ChatMessage[]> {
+    return Array.from(this.chatMessages.values())
+      .filter((msg) => msg.sessionId === sessionId)
+      .sort((a, b) => a.sentAt.getTime() - b.sentAt.getTime());
   }
 }
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFS Form Widget Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #f9fafb;
+    }
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+    .info {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>SFS Form Widget Example</h1>
+  <p>This page demonstrates the embeddable form widget.</p>
+
+  <div class="info">
+    <h3>How it works</h3>
+    <p>The form widget is embedded via the script tag below. When submitted, it sends data to the SFS API and emits a custom event.</p>
+    <p>Open the browser console to see form submission events.</p>
+  </div>
+
+  <!-- SFS Embed SDK -->
+  <script
+    src="../dist/sdk/sfs-embed.min.js"
+    data-workspace="demo-workspace"
+    data-widgets='[{
+      "type": "form",
+      "enabled": true,
+      "config": {
+        "formId": "contact-form",
+        "title": "Get in Touch",
+        "description": "We will get back to you within 24 hours",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Full Name",
+            "type": "text",
+            "required": true,
+            "placeholder": "John Doe"
+          },
+          {
+            "name": "email",
+            "label": "Email Address",
+            "type": "email",
+            "required": true,
+            "placeholder": "john@example.com"
+          },
+          {
+            "name": "company",
+            "label": "Company",
+            "type": "text",
+            "placeholder": "Acme Inc."
+          },
+          {
+            "name": "message",
+            "label": "Message",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Tell us about your project..."
+          },
+          {
+            "name": "subscribe",
+            "label": "Subscribe to our newsletter",
+            "type": "checkbox"
+          }
+        ]
+      }
+    }]'>
+  </script>
+
+  <script>
+    // Listen for form submission events
+    window.addEventListener('message', (event) => {
+      if (event.data.type === 'sfs_form_submitted') {
+        console.log('✅ Form submitted successfully!', event.data);
+        alert('Form submitted! Check the console for details.');
+      }
+    });
+  </script>
+</body>
+</html>

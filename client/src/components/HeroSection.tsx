@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Code2, Zap, Shield } from "lucide-react";
+import { Link } from "wouter";
 
 export default function HeroSection() {
   return (
@@ -23,9 +24,11 @@ export default function HeroSection() {
         </p>
         
         <div className="flex items-center justify-center gap-4 pt-4">
-          <Button size="lg" className="h-12 px-8" data-testid="button-get-started">
-            Get Started
-          </Button>
+          <Link href="/demo">
+            <Button size="lg" className="h-12 px-8" data-testid="button-get-started">
+              Try Live Demo
+            </Button>
+          </Link>
           <Button size="lg" variant="outline" className="h-12 px-8" data-testid="button-view-docs">
             View Docs
           </Button>
@@ -36,7 +39,7 @@ export default function HeroSection() {
           <div className="relative max-w-2xl mx-auto">
             <pre className="bg-card border border-card-border rounded-lg p-4 text-left overflow-x-auto">
               <code className="text-sm font-mono text-card-foreground">
-                {`<script src="https://cdn.example.com/widget-sdk.js"></script>
+                {`<script src="${window.location.origin}/widget-sdk.js"></script>
 <script>
   WidgetSDK.init({
     form: { target: '#contact-form' },
@@ -50,7 +53,17 @@ export default function HeroSection() {
               variant="ghost" 
               className="absolute top-2 right-2"
               data-testid="button-copy-code"
-              onClick={() => console.log('Copy code triggered')}
+              onClick={() => {
+                const code = `<script src="${window.location.origin}/widget-sdk.js"></script>
+<script>
+  WidgetSDK.init({
+    form: { target: '#contact-form' },
+    chat: { position: 'bottom-right' }
+  });
+</script>`;
+                navigator.clipboard.writeText(code);
+                console.log('Copy code triggered');
+              }}
             >
               Copy
             </Button>

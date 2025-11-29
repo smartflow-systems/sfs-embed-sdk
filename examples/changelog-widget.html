@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFS Changelog Widget Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #f9fafb;
+    }
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+    .info {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>SFS Changelog Widget Example</h1>
+  <p>This page demonstrates the changelog notification widget.</p>
+
+  <div class="info">
+    <h3>How it works</h3>
+    <p>The changelog widget appears as a badge in the bottom-left corner showing unread updates.</p>
+    <p>Click the "What's New" badge to see the latest features and improvements.</p>
+    <p>Read status is stored in localStorage and persists across sessions.</p>
+  </div>
+
+  <!-- SFS Embed SDK -->
+  <script
+    src="../dist/sdk/sfs-embed.min.js"
+    data-workspace="demo-workspace"
+    data-widgets='[{
+      "type": "changelog",
+      "enabled": true,
+      "config": {
+        "workspaceId": "demo-workspace",
+        "badge": true,
+        "maxItems": 10
+      }
+    }]'>
+  </script>
+</body>
+</html>
