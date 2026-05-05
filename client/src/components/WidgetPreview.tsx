@@ -31,14 +31,19 @@ export default function WidgetPreview({ type, title, description }: WidgetPrevie
       setCalcDisplay("0");
     } else if (value === "=") {
       try {
-        setCalcDisplay(eval(calcDisplay).toString());
+        if (!/^[0-9+\-*/().\s]+$/.test(calcDisplay)) {
+          setCalcDisplay("Error");
+        } else {
+          // eslint-disable-next-line no-new-func
+          const result = new Function('"use strict"; return (' + calcDisplay + ')')() as number;
+          setCalcDisplay(isFinite(result) ? result.toString() : "Error");
+        }
       } catch {
         setCalcDisplay("Error");
       }
     } else {
       setCalcDisplay(calcDisplay === "0" ? value : calcDisplay + value);
     }
-    console.log('Calculator button clicked:', value);
   };
 
   const handleSendMessage = () => {

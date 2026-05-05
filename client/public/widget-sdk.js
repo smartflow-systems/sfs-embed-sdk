@@ -305,8 +305,12 @@
           updateDisplay('0');
         } else if (value === '=') {
           try {
-            const result = eval(display);
-            updateDisplay(result.toString());
+            if (!/^[0-9+\-*/().\s]+$/.test(display)) {
+              updateDisplay('Error');
+            } else {
+              const result = Function('"use strict"; return (' + display + ')')();
+              updateDisplay(isFinite(result) ? result.toString() : 'Error');
+            }
           } catch {
             updateDisplay('Error');
           }
@@ -516,12 +520,23 @@
     const input = document.getElementById(chatId + '-input');
     const sendBtn = document.getElementById(chatId + '-send');
 
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(String(str)));
+      return div.innerHTML;
+    }
+
     function renderMessages() {
-      messagesContainer.innerHTML = messages.map(msg => `
-        <div class="widget-chat-message ${msg.sender}">
-          <div class="widget-chat-bubble">${msg.text}</div>
-        </div>
-      `).join('');
+      messagesContainer.innerHTML = '';
+      messages.forEach(function(msg) {
+        const outer = document.createElement('div');
+        outer.className = 'widget-chat-message ' + escapeHtml(msg.sender);
+        const bubble = document.createElement('div');
+        bubble.className = 'widget-chat-bubble';
+        bubble.textContent = msg.text;
+        outer.appendChild(bubble);
+        messagesContainer.appendChild(outer);
+      });
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 

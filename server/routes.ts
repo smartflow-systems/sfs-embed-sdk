@@ -4,7 +4,23 @@ import { storage } from "./storage";
 import { insertFormSubmissionSchema, insertChatMessageSchema } from "@shared/schema";
 import path from "path";
 
+// Admin auth middleware
+function requireAdminKey(req: any, res: any, next: any) {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey) {
+    return res.status(503).json({ success: false, error: "Admin access not configured" });
+  }
+  const providedKey = req.headers["x-admin-key"] || req.query.key;
+  if (!providedKey || providedKey !== adminKey) {
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  }
+  next();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check
+  app.get("/health", (_req, res) => res.json({ ok: true }));
+
   // Serve the widget SDK file
   app.get("/widget-sdk.js", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "client/public/widget-sdk.js"));
@@ -24,16 +40,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all form submissions (for admin/demo purposes)
-  app.get("/api/forms/submissions", async (_req, res) => {
+  // Get all form submissions — admin only
+  app.get("/api/forms/submissions", requireAdminKey, async (_req, res) => {
     try {
       const submissions = await storage.getAllFormSubmissions();
       res.json({ success: true, submissions });
     } catch (error) {
-      console.error("Error fetching submissions:", error);
-      res.status(500).json({ 
-        success: false, 
-        error: "Failed to fetch submissions" 
+      console.error("Error fetching submissions");
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch submissions"
       });
     }
   });

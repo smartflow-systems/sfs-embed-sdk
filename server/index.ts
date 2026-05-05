@@ -1,8 +1,28 @@
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Security headers
+app.use(helmet());
+
+// CORS — restrict to same-origin; override via CORS_ORIGIN env var
+const allowedOrigin = process.env.CORS_ORIGIN || false;
+app.use(cors({ origin: allowedOrigin, credentials: false }));
+
+// Rate limiting
+const defaultLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: "Too many requests, please try again later." }
+});
+app.use(defaultLimiter);
 
 declare module 'http' {
   interface IncomingMessage {
@@ -10,11 +30,12 @@ declare module 'http' {
   }
 }
 app.use(express.json({
+  limit: "50kb",
   verify: (req, _res, buf) => {
     req.rawBody = buf;
   }
 }));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: "50kb" }));
 
 app.use((req, res, next) => {
   const start = Date.now();
