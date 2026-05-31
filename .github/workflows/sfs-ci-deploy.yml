@@ -26,7 +26,7 @@ jobs:
         run: npm ci || npm install
 
       - name: Build
-        run: npm run build
+        run: npm run build:all
 
       - name: Deploy status
         run: echo "Deployment completed for service ${{ inputs.service }} in ${{ inputs.env }} environment"
